@@ -1,0 +1,57 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.10
+    restart: always
+    env_file: .env
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${LETS_ENCRYPT_CONTACT_EMAIL}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+      
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - traefik-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+    labels:
+      - "traefik.enable=true"
+      # http
+      - "traefik.http.routers.traefik-http.rule=Host(${DOMAIN_NAME})"
+      - "traefik.http.routers.traefik-http.entrypoints=web"
+      - "traefik.http.routers.traefik-http.service=traefik"
+
+      # https
+      - "traefik.http.routers.traefik-https.rule=Host(${DOMAIN_NAME})"
+      - "traefik.http.routers.traefik-https.entrypoints=websecure"
+      - "traefik.http.routers.traefik-https.tls.certresolver=myresolver"
+      - "traefik.http.routers.traefik-https.service=traefik"
+      - "traefik.http.routers.traefik-https.middlewares=gzip"
+
+      # services
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+
+      # middlewares
+      - "traefik.http.middlewares.traefik-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.traefik-redirect.redirectscheme.permanent=true"
+      - "traefik.http.routers.traefik-http.middlewares=traefik-redirect"
+      - "traefik.http.middlewares.gzip.compress=true"
+
+      # Custom size limits middleware
+      - "traefik.http.middlewares.custom-size-limits.buffering.maxRequestBodyBytes=629145600"
+      - "traefik.http.middlewares.custom-size-limits.buffering.maxResponseBodyBytes=629145600"
+      - "traefik.http.middlewares.custom-size-limits.buffering.memRequestBodyBytes=629145600"
+      - "traefik.http.middlewares.custom-size-limits.buffering.memResponseBodyBytes=629145600"
+
+networks:
+  traefik-network:
+    external: true

@@ -1,0 +1,17 @@
+services: 
+  postgresql:
+    image: postgres:17
+    restart: always
+    networks:
+      - postgres-network
+    env_file:
+      - ./.env
+    volumes: 
+      - postgresql-data:/var/lib/postgresql/data
+    labels:
+      - "traefik.enable=false"
+volumes: 
+  postgresql-data:
+networks:
+  postgres-network:
+    external: true
