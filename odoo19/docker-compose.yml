@@ -28,7 +28,7 @@ services:
             - "traefik.http.routers.odoo19-https.entrypoints=websecure"
             - "traefik.http.routers.odoo19-https.service=odoo19"
             - "traefik.http.routers.odoo19-https.tls.certresolver=myresolver"
-            - "traefik.http.routers.odoo19-https.middlewares=gzip,sslheader,limit"
+            - "traefik.http.routers.odoo19-https.middlewares=gzip,sslheader"
             
             #----------------------------- routes for: odoo/web/database || odoo/website/info  -----------------------------
             # http
@@ -43,7 +43,7 @@ services:
             - "traefik.http.routers.odoo19-db-https.service=odoo19"
             - "traefik.http.services.odoo19-db-https.loadbalancer.server.port=8069"
             - "traefik.http.routers.odoo19-db-https.tls.certresolver=myresolver"
-            - "traefik.http.routers.odoo19-db-https.middlewares=gzip,sslheader,limit"
+            - "traefik.http.routers.odoo19-db-https.middlewares=gzip,sslheader"
             
             #---------------------------------------- routes for: odoo/websocket ------------------------------------------------
             # http
@@ -56,7 +56,7 @@ services:
             - "traefik.http.routers.odoo19-im-https.entrypoints=websecure"
             - "traefik.http.routers.odoo19-im-https.service=odoo19-im"
             - "traefik.http.routers.odoo19-im-https.tls.certresolver=myresolver"
-            - "traefik.http.routers.odoo19-im-https.middlewares=gzip,sslheader,limit"
+            - "traefik.http.routers.odoo19-im-https.middlewares=gzip,sslheader"
 
             #====================================================== services ===========================================================
             - "traefik.http.services.odoo19.loadbalancer.server.port=8069"
