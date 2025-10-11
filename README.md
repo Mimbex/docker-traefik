@@ -16,6 +16,22 @@ docker-traefik/
 
 ## 🚀 Quick Start
 
+### 0. Install Docker (Optional)
+
+If you don't have Docker installed, run the installation script with sudo:
+
+```bash
+sudo ./install-docker.sh
+```
+
+After installation, **log out and log back in** for the changes to take effect, or run:
+
+```bash
+newgrp docker
+```
+
+Then you can use Docker without sudo.
+
 ### 1. Configure Docker Networks
 
 ```bash
