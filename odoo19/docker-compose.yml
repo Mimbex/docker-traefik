@@ -5,6 +5,7 @@ services:
         volumes:
             - odoo19-data:/var/lib/odoo/
             - ./extra-addons/:/mnt/extra-addons/
+            - ./custom-addons/:/mnt/custom-addons/
             - ./odoo.conf:/etc/odoo/odoo.conf
             
         # ports:
