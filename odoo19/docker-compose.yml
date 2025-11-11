@@ -20,12 +20,12 @@ services:
             
             #----------------------------------------------- routers for: odoo --------------------------------------------------
             # http
-            - "traefik.http.routers.odoo19-http.rule=Host(`${DOMAIN}`)"
+            - "traefik.http.routers.odoo19-http.rule=Host(${DOMAIN})"
             - "traefik.http.routers.odoo19-http.entrypoints=web"
             - "traefik.http.routers.odoo19-http.service=odoo19"
 
             # https
-            - "traefik.http.routers.odoo19-https.rule=Host(`${DOMAIN}`)"
+            - "traefik.http.routers.odoo19-https.rule=Host(${DOMAIN})"
             - "traefik.http.routers.odoo19-https.entrypoints=websecure"
             - "traefik.http.routers.odoo19-https.service=odoo19"
             - "traefik.http.routers.odoo19-https.tls.certresolver=myresolver"
@@ -33,13 +33,13 @@ services:
             
             #----------------------------- routes for: odoo/web/database || odoo/website/info  -----------------------------
             # http
-            - "traefik.http.routers.odoo19-db-http.rule=Host(`${DOMAIN}`) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
+            - "traefik.http.routers.odoo19-db-http.rule=Host(${DOMAIN}) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
             - "traefik.http.routers.odoo19-db-http.entrypoints=web"
             - "traefik.http.routers.odoo19-db-http.service=odoo19"
             - "traefik.http.services.odoo19-db-http.loadbalancer.server.port=8069"
 
             # https
-            - "traefik.http.routers.odoo19-db-https.rule=Host(`${DOMAIN}`) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
+            - "traefik.http.routers.odoo19-db-https.rule=Host(${DOMAIN}) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
             - "traefik.http.routers.odoo19-db-https.entrypoints=websecure"
             - "traefik.http.routers.odoo19-db-https.service=odoo19"
             - "traefik.http.services.odoo19-db-https.loadbalancer.server.port=8069"
@@ -48,12 +48,12 @@ services:
             
             #---------------------------------------- routes for: odoo/websocket ------------------------------------------------
             # http
-            - "traefik.http.routers.odoo19-im-http.rule=Host(`${DOMAIN}`) && (PathPrefix(`/websocket`))"
+            - "traefik.http.routers.odoo19-im-http.rule=Host(${DOMAIN}) && (PathPrefix(`/websocket`))"
             - "traefik.http.routers.odoo19-im-http.entrypoints=web"
             - "traefik.http.routers.odoo19-im-http.service=odoo19-im"
 
             # https
-            - "traefik.http.routers.odoo19-im-https.rule=Host(`${DOMAIN}`) && (PathPrefix(`/websocket`))"
+            - "traefik.http.routers.odoo19-im-https.rule=Host(${DOMAIN}) && (PathPrefix(`/websocket`))"
             - "traefik.http.routers.odoo19-im-https.entrypoints=websecure"
             - "traefik.http.routers.odoo19-im-https.service=odoo19-im"
             - "traefik.http.routers.odoo19-im-https.tls.certresolver=myresolver"
