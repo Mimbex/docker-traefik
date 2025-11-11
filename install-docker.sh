@@ -55,10 +55,15 @@ echo ""
 echo "📦 Updating package index with Docker repository..."
 apt-get update
 
-# Install Docker Engine
+# Install Docker Engine (version 24.x compatible with Traefik)
 echo ""
-echo "🐳 Installing Docker Engine..."
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+echo "🐳 Installing Docker Engine 24.x (compatible with Traefik)..."
+apt-get install -y docker-ce=5:24.0.* docker-ce-cli=5:24.0.* containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Hold Docker version to prevent auto-updates
+echo ""
+echo "🔒 Locking Docker version to prevent auto-updates..."
+apt-mark hold docker-ce docker-ce-cli containerd.io
 
 # Create docker group if it doesn't exist
 echo ""
