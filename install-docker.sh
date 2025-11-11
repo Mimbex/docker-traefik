@@ -55,15 +55,34 @@ echo ""
 echo "📦 Updating package index with Docker repository..."
 apt-get update
 
-# Install Docker Engine (version 24.x compatible with Traefik)
+# Unhold packages if they are held
 echo ""
-echo "🐳 Installing Docker Engine 24.x (compatible with Traefik)..."
-apt-get install -y docker-ce=5:24.0.* docker-ce-cli=5:24.0.* containerd.io docker-buildx-plugin docker-compose-plugin
+echo "🔓 Unholding Docker packages..."
+apt-mark unhold docker-ce docker-ce-cli containerd.io 2>/dev/null || true
+
+# Install Docker Engine 28.x (compatible with Traefik v2.10)
+echo ""
+echo "🐳 Installing Docker Engine 28.x (compatible with Traefik v2.10)..."
+apt-get install -y --allow-change-held-packages docker-ce=5:28.* docker-ce-cli=5:28.* containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Hold Docker version to prevent auto-updates
 echo ""
-echo "🔒 Locking Docker version to prevent auto-updates..."
-apt-mark hold docker-ce docker-ce-cli containerd.io
+echo "🔒 Locking Docker version..."
+apt-mark hold docker-ce docker-ce-cli
+
+# Configure Docker daemon for compatibility
+echo ""
+echo "⚙️  Configuring Docker daemon..."
+mkdir -p /etc/docker
+cat > /etc/docker/daemon.json <<EOF
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+EOF
 
 # Create docker group if it doesn't exist
 echo ""
