@@ -1,4 +1,5 @@
-FROM odoo:19.0
+ARG ODOO_VERSION=19.0
+FROM odoo:${ODOO_VERSION}
 
 # change to the root user
 USER root

@@ -2,9 +2,9 @@
 
 echo "🛑 Stopping all services..."
 
-# Stop Odoo19
-echo "⏹️  Stopping Odoo19..."
-cd odoo19 && docker compose down && cd ..
+# Stop Odoo
+echo "⏹️  Stopping Odoo..."
+cd odoo && docker compose down && cd ..
 
 # Stop PostgreSQL
 echo "⏹️  Stopping PostgreSQL..."

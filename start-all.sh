@@ -10,9 +10,9 @@ cd traefik && docker compose up -d && cd ..
 echo "▶️  Starting PostgreSQL..."
 cd postgresql && docker compose up -d && cd ..
 
-# Start Odoo19
-echo "▶️  Starting Odoo19..."
-cd odoo19 && docker compose up -d && cd ..
+# Start Odoo
+echo "▶️  Starting Odoo..."
+cd odoo && docker compose up -d && cd ..
 
 echo "✅ All services started successfully!"
 docker ps

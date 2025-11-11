@@ -1,0 +1,85 @@
+services:
+    odoo:
+        build:
+            context: ./
+            args:
+                ODOO_VERSION: ${ODOO_VERSION:-latest}
+        restart: always
+        volumes:
+            - odoo-data:/var/lib/odoo/
+            - ./extra-addons/:/mnt/extra-addons/
+            - ./custom-addons/:/mnt/custom-addons/
+            - ./odoo.conf:/etc/odoo/odoo.conf
+            
+        # ports:
+        #     - 8069:8069
+        env_file:
+            - ./.env
+        networks:
+            - traefik-network
+            - postgres-network
+        labels:
+            - "traefik.enable=true"
+            
+            #----------------------------------------------- routers for: odoo --------------------------------------------------
+            # http
+            - "traefik.http.routers.odoo-http.rule=Host(${DOMAIN})"
+            - "traefik.http.routers.odoo-http.entrypoints=web"
+            - "traefik.http.routers.odoo-http.service=odoo"
+
+            # https
+            - "traefik.http.routers.odoo-https.rule=Host(${DOMAIN})"
+            - "traefik.http.routers.odoo-https.entrypoints=websecure"
+            - "traefik.http.routers.odoo-https.service=odoo"
+            - "traefik.http.routers.odoo-https.tls.certresolver=myresolver"
+            - "traefik.http.routers.odoo-https.middlewares=gzip,sslheader"
+            
+            #----------------------------- routes for: odoo/web/database || odoo/website/info  -----------------------------
+            # http
+            - "traefik.http.routers.odoo-db-http.rule=Host(${DOMAIN}) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
+            - "traefik.http.routers.odoo-db-http.entrypoints=web"
+            - "traefik.http.routers.odoo-db-http.service=odoo"
+            - "traefik.http.services.odoo-db-http.loadbalancer.server.port=8069"
+
+            # https
+            - "traefik.http.routers.odoo-db-https.rule=Host(${DOMAIN}) && (PathPrefix(`/web/database`) || PathPrefix(`/website/info`))"
+            - "traefik.http.routers.odoo-db-https.entrypoints=websecure"
+            - "traefik.http.routers.odoo-db-https.service=odoo"
+            - "traefik.http.services.odoo-db-https.loadbalancer.server.port=8069"
+            - "traefik.http.routers.odoo-db-https.tls.certresolver=myresolver"
+            - "traefik.http.routers.odoo-db-https.middlewares=gzip,sslheader"
+            
+            #---------------------------------------- routes for: odoo/websocket ------------------------------------------------
+            # http
+            - "traefik.http.routers.odoo-im-http.rule=Host(${DOMAIN}) && (PathPrefix(`/websocket`))"
+            - "traefik.http.routers.odoo-im-http.entrypoints=web"
+            - "traefik.http.routers.odoo-im-http.service=odoo-im"
+
+            # https
+            - "traefik.http.routers.odoo-im-https.rule=Host(${DOMAIN}) && (PathPrefix(`/websocket`))"
+            - "traefik.http.routers.odoo-im-https.entrypoints=websecure"
+            - "traefik.http.routers.odoo-im-https.service=odoo-im"
+            - "traefik.http.routers.odoo-im-https.tls.certresolver=myresolver"
+            - "traefik.http.routers.odoo-im-https.middlewares=gzip,sslheader"
+
+            #====================================================== services ===========================================================
+            - "traefik.http.services.odoo.loadbalancer.server.port=8069"
+            - "traefik.http.services.odoo-im.loadbalancer.server.port=8072"
+
+            - "traefik.docker.network=traefik-network"
+            #===================================================== middlewares =========================================================
+             # http to https
+            - "traefik.http.middlewares.odoo-redirect.redirectscheme.scheme=https"
+            - "traefik.http.middlewares.odoo-redirect.redirectscheme.permanent=true"
+            - "traefik.http.routers.odoo-http.middlewares=odoo-redirect"
+            - "traefik.http.routers.odoo-db-http.middlewares=odoo-redirect"
+            - "traefik.http.routers.odoo-im-http.middlewares=odoo-redirect"
+            - "traefik.http.middlewares.gzip.compress=true"
+            - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
+volumes:
+    odoo-data:
+networks:
+    traefik-network:
+        external: true
+    postgres-network:
+        external: true

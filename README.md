@@ -1,6 +1,6 @@
-# Docker Traefik + Odoo 19 + PostgreSQL
+# Docker Traefik + Odoo (Multi-Version) + PostgreSQL
 
-Complete development stack with Traefik as reverse proxy, automatic SSL certificates with Let's Encrypt, PostgreSQL 17, and Odoo 19.
+Complete development stack with Traefik as reverse proxy, automatic SSL certificates with Let's Encrypt, PostgreSQL 17, and Odoo (supports multiple versions via environment variables).
 
 ## 📋 Project Structure
 
@@ -8,7 +8,7 @@ Complete development stack with Traefik as reverse proxy, automatic SSL certific
 docker-traefik/
 ├── traefik/           # Reverse proxy with automatic SSL
 ├── postgresql/        # PostgreSQL 17 database
-├── odoo19/           # Odoo 19 with custom configuration
+├── odoo/              # Odoo with multi-version support
 ├── build-all.sh      # Script to build all services
 ├── start-all.sh      # Script to start all services
 └── stop-all.sh       # Script to stop all services
@@ -64,13 +64,16 @@ POSTGRES_PASSWORD=odoo
 POSTGRES_USER=odoo
 ```
 
-#### `odoo19/.env`
+#### `odoo/.env`
 ```env
+ODOO_VERSION=19.0
 HOST=postgresql
 USER=odoo
 PASSWORD=odoo
-DOMAIN=demo19.yourdomain.com
+DOMAIN=demo.yourdomain.com
 ```
+
+**Note**: Change `ODOO_VERSION` to use different Odoo versions (e.g., `18.0`, `17.0`, `16.0`)
 
 ### 4. Build and Start Services
 
@@ -88,7 +91,7 @@ docker ps
 ## 🌐 Service Access
 
 - **Traefik Dashboard**: `https://traefik.yourdomain.com:8080`
-- **Odoo 19**: `https://demo19.yourdomain.com`
+- **Odoo**: `https://demo.yourdomain.com`
   - Default user: `admin`
   - Master password (odoo.conf): `odooPassword`
 
@@ -98,7 +101,7 @@ The project uses **environment variables** to manage domains, avoiding manual en
 
 ### Change Odoo Domain
 
-Simply edit the `odoo19/.env` file:
+Simply edit the `odoo/.env` file:
 
 ```env
 DOMAIN=new-domain.yourdomain.com
@@ -113,6 +116,23 @@ Edit the `traefik/.env` file:
 ```env
 DOMAIN_NAME=`new-traefik.yourdomain.com`
 ```
+
+### Change Odoo Version
+
+Edit the `odoo/.env` file and change the version:
+
+```env
+ODOO_VERSION=18.0  # or 17.0, 16.0, 15.0, etc.
+```
+
+Then rebuild the container:
+
+```bash
+cd odoo
+docker compose up -d --build
+```
+
+**Supported versions**: Any official Odoo Docker image version (19.0, 18.0, 17.0, 16.0, 15.0, 14.0, etc.)
 
 ## 🛠️ Management Scripts
 
@@ -150,15 +170,18 @@ Stops all services:
 - **Network**: `postgres-network` (internal)
 - **Persistent volume**: `postgresql-data`
 
-### Odoo 19
+### Odoo (Multi-Version Support)
+- **Default version**: 19.0 (configurable via `ODOO_VERSION` in `.env`)
 - **Internal ports**: 8069 (HTTP), 8072 (WebSocket)
 - **Features**:
+  - **Multi-version support**: Change Odoo version by editing `.env` file
   - Proxy mode enabled
   - WebSocket for real-time chat
   - Special routes for `/web/database` and `/website/info`
   - Volumes:
-    - `odoo19-data`: Odoo data
+    - `odoo-data`: Odoo data
     - `./extra-addons`: Custom modules
+    - `./custom-addons`: Additional custom modules
     - `./odoo.conf`: Configuration
 
 ## 🔧 Useful Commands
@@ -167,17 +190,17 @@ Stops all services:
 ```bash
 cd traefik && docker compose logs -f
 cd postgresql && docker compose logs -f
-cd odoo19 && docker compose logs -f
+cd odoo && docker compose logs -f
 ```
 
 ### Restart a specific service
 ```bash
-cd odoo19 && docker compose restart
+cd odoo && docker compose restart
 ```
 
 ### Rebuild a service
 ```bash
-cd odoo19 && docker compose up -d --build
+cd odoo && docker compose up -d --build
 ```
 
 ### Check network status
