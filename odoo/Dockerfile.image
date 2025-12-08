@@ -1,0 +1,38 @@
+# ============================================================
+# Dockerfile for Official Odoo Docker Image Deployment
+# ============================================================
+# This Dockerfile uses the official Odoo images from Docker Hub
+# Recommended for: Production environments, stable releases
+# Usage: Set DEPLOYMENT_MODE=image in .env file
+# ============================================================
+
+ARG ODOO_VERSION=19.0
+FROM odoo:${ODOO_VERSION}
+
+# Change to root user for installations
+USER root
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    libxml2-dev \
+    libxmlsec1-dev \
+    libxmlsec1-openssl \
+    python3-pip \
+    python3-qrcode \
+    python3-dev \
+    python3-wheel \
+    gcc \
+    git \
+    nano \
+    iputils-ping \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages
+RUN pip3 install --break-system-packages pdf2image
+
+# Set proper permissions
+RUN chown odoo:odoo /etc/odoo/odoo.conf
+
+# Switch back to odoo user
+USER odoo

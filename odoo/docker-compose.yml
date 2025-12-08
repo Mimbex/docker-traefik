@@ -2,8 +2,11 @@ services:
     odoo:
         build:
             context: ./
+            dockerfile: ${DEPLOYMENT_MODE:-image}
             args:
-                ODOO_VERSION: ${ODOO_VERSION:-latest}
+                ODOO_VERSION: ${ODOO_VERSION:-19.0}
+                ODOO_REPO: ${ODOO_REPO:-https://github.com/odoo/odoo.git}
+                ODOO_BRANCH: ${ODOO_BRANCH:-saas-18.4}
         restart: always
         volumes:
             - odoo-data:/var/lib/odoo/

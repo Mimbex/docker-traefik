@@ -1,0 +1,95 @@
+# ============================================================
+# Dockerfile for Odoo Source Code Deployment (Git Clone)
+# ============================================================
+# This Dockerfile clones Odoo from a Git repository
+# Recommended for: Development, specific branches (e.g., saas-18.4)
+# Usage: Set DEPLOYMENT_MODE=source in .env file
+# ============================================================
+
+FROM python:3.11-slim-bookworm
+
+# Build arguments
+ARG ODOO_REPO=https://github.com/odoo/odoo.git
+ARG ODOO_BRANCH=saas-18.4
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    dirmngr \
+    fonts-noto-cjk \
+    gnupg \
+    libssl-dev \
+    node-less \
+    npm \
+    python3-num2words \
+    python3-pdfminer \
+    python3-pip \
+    python3-phonenumbers \
+    python3-pyldap \
+    python3-qrcode \
+    python3-renderpm \
+    python3-setuptools \
+    python3-slugify \
+    python3-vobject \
+    python3-watchdog \
+    python3-xlrd \
+    python3-xlwt \
+    xz-utils \
+    git \
+    build-essential \
+    libxml2-dev \
+    libxslt1-dev \
+    libevent-dev \
+    libsasl2-dev \
+    libldap2-dev \
+    pkg-config \
+    libxmlsec1-dev \
+    libxmlsec1-openssl \
+    python3-dev \
+    python3-wheel \
+    gcc \
+    nano \
+    iputils-ping \
+    libpq-dev \
+    && curl -o wkhtmltox.deb -sSL https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && apt-get install -y --no-install-recommends ./wkhtmltox.deb \
+    && rm -rf /var/lib/apt/lists/* wkhtmltox.deb
+
+# Create odoo user
+RUN useradd -ms /bin/bash odoo
+
+# Clone Odoo repository
+WORKDIR /opt
+RUN git clone --depth 1 --branch ${ODOO_BRANCH} ${ODOO_REPO} odoo
+
+# Install Odoo Python dependencies
+WORKDIR /opt/odoo
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Install additional Python packages
+RUN pip3 install --no-cache-dir pdf2image
+
+# Create necessary directories
+RUN mkdir -p /var/lib/odoo \
+    /mnt/extra-addons \
+    /mnt/custom-addons \
+    /etc/odoo \
+    && chown -R odoo:odoo /var/lib/odoo /mnt/extra-addons /mnt/custom-addons /etc/odoo /opt/odoo
+
+# Copy entrypoint script
+COPY --chown=odoo:odoo entrypoint.sh /
+RUN chmod +x /entrypoint.sh
+
+# Expose Odoo ports
+EXPOSE 8069 8072
+
+# Set environment variables
+ENV ODOO_RC=/etc/odoo/odoo.conf
+
+# Switch to odoo user
+USER odoo
+
+# Set entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["odoo"]
