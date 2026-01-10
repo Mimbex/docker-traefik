@@ -1,6 +1,6 @@
 # 🚀 Get Started in 3 Steps
 
-## Step 1: Prerequisites (1 minute)
+## Step 1: Prerequisites (2 minutes)
 
 ### Install Docker
 ```bash
@@ -10,14 +10,18 @@ sudo ./install-docker.sh
 newgrp docker
 ```
 
+### Create Networks
+```bash
+docker network create traefik-network
+docker network create postgres-network
+```
+
 ### Configure Let's Encrypt
 ```bash
 mkdir -p traefik/letsencrypt
 touch traefik/letsencrypt/acme.json
 chmod 600 traefik/letsencrypt/acme.json
 ```
-
-**Note**: Docker networks (`traefik-network` and `postgres-network`) are created automatically by the scripts!
 
 ---
 

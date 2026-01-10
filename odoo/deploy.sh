@@ -151,18 +151,6 @@ view_configuration() {
 
 # Function to build and start
 build_and_start() {
-    # Check and create Docker networks if they don't exist
-    print_info "Checking Docker networks..."
-    if ! docker network inspect traefik-network &> /dev/null; then
-        print_info "Creating traefik-network..."
-        docker network create traefik-network
-    fi
-    
-    if ! docker network inspect postgres-network &> /dev/null; then
-        print_info "Creating postgres-network..."
-        docker network create postgres-network
-    fi
-    
     print_info "Building Docker image..."
     docker compose build
     

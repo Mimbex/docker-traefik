@@ -76,7 +76,14 @@ newgrp docker
 
 Then you can use Docker without sudo.
 
-### 1. Configure Let's Encrypt Permissions
+### 1. Configure Docker Networks
+
+```bash
+docker network create traefik-network
+docker network create postgres-network
+```
+
+### 2. Configure Let's Encrypt Permissions
 
 ```bash
 mkdir -p traefik/letsencrypt
@@ -84,9 +91,7 @@ touch traefik/letsencrypt/acme.json
 chmod 600 traefik/letsencrypt/acme.json
 ```
 
-**Note**: Docker networks (`traefik-network` and `postgres-network`) are created automatically by the scripts.
-
-### 2. Configure Domains
+### 3. Configure Domains
 
 Edit the `.env` files in each folder:
 
@@ -128,7 +133,7 @@ DOMAIN=demo.yourdomain.com
 
 **Note**: You can also use the interactive deployment script: `cd odoo && ./deploy.sh`
 
-### 3. Build and Start Services
+### 4. Build and Start Services
 
 ```bash
 # Build all services

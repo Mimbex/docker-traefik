@@ -55,6 +55,11 @@ docker compose up -d --build
 ## 📋 Prerequisites Checklist
 
 - [ ] Docker installed
+- [ ] Docker networks created:
+  ```bash
+  docker network create traefik-network
+  docker network create postgres-network
+  ```
 - [ ] Let's Encrypt configured:
   ```bash
   mkdir -p traefik/letsencrypt
@@ -62,8 +67,6 @@ docker compose up -d --build
   chmod 600 traefik/letsencrypt/acme.json
   ```
 - [ ] Domain DNS configured (pointing to your server)
-
-**Note**: Docker networks are created automatically by the scripts!
 
 ---
 
@@ -74,12 +77,16 @@ docker compose up -d --build
 git clone https://github.com/Mimbex/docker-traefik.git
 cd docker-traefik
 
-# 2. Configure Let's Encrypt
+# 2. Create networks
+docker network create traefik-network
+docker network create postgres-network
+
+# 3. Configure Let's Encrypt
 mkdir -p traefik/letsencrypt
 touch traefik/letsencrypt/acme.json
 chmod 600 traefik/letsencrypt/acme.json
 
-# 3. Configure Traefik
+# 4. Configure Traefik
 cd traefik
 cat > .env << EOF
 LETS_ENCRYPT_CONTACT_EMAIL=your-email@example.com
@@ -87,7 +94,7 @@ DOMAIN_NAME=traefik.yourdomain.com
 EOF
 cd ..
 
-# 4. Configure PostgreSQL
+# 5. Configure PostgreSQL
 cd postgresql
 cat > .env << EOF
 POSTGRES_DB=postgres
@@ -96,19 +103,19 @@ POSTGRES_USER=odoo
 EOF
 cd ..
 
-# 5. Configure Odoo (Interactive)
+# 6. Configure Odoo (Interactive)
 cd odoo
 ./deploy.sh
 # OR manually:
 # cp .env.example .env
 # Edit .env with your settings
 
-# 6. Build and start everything (networks created automatically)
+# 7. Build and start everything
 cd ..
 ./build-all.sh
 ./start-all.sh
 
-# 7. Check status
+# 8. Check status
 docker ps
 ```
 
