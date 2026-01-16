@@ -26,9 +26,15 @@ if ! command -v docker &> /dev/null; then
         chmod +x install-docker.sh
         ./install-docker.sh
         echo -e "${GREEN}✓${NC} Docker installed successfully"
-        echo -e "${YELLOW}⚠️  Please log out and log back in, or run: newgrp docker${NC}"
-        echo -e "${YELLOW}⚠️  Then run this script again.${NC}"
-        exit 0
+        
+        # Check if running as root
+        if [ "$EUID" -ne 0 ]; then
+            echo -e "${YELLOW}⚠️  Please log out and log back in, or run: newgrp docker${NC}"
+            echo -e "${YELLOW}⚠️  Then run this script again.${NC}"
+            exit 0
+        else
+            echo -e "${GREEN}✓${NC} Running as root, continuing deployment..."
+        fi
     else
         echo -e "${RED}✗${NC} install-docker.sh not found!"
         echo -e "${YELLOW}Please install Docker manually:${NC}"
