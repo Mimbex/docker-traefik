@@ -58,9 +58,52 @@ docker-traefik/
 └── README.md                  # This file
 ```
 
+
 ## 🚀 Quick Start
 
-### 0. Install Docker (Optional)
+### ⚡ One-Command Deployment
+
+**Step 1:** Configure your `.env` files:
+
+```bash
+# traefik/.env
+LETS_ENCRYPT_CONTACT_EMAIL=your-email@example.com
+DOMAIN_NAME=`traefik.yourdomain.com`
+
+# postgresql/.env
+POSTGRES_DB=postgres
+POSTGRES_PASSWORD=odoo
+POSTGRES_USER=odoo
+
+# odoo/.env (choose Image or Source mode)
+DEPLOYMENT_MODE=image
+ODOO_VERSION=19.0
+HOST=postgresql
+USER=odoo
+PASSWORD=odoo
+DOMAIN=`odoo.yourdomain.com`
+```
+
+**Step 2:** Run the deployment script:
+
+```bash
+chmod +x deploy.sh && ./deploy.sh
+```
+
+**That's it!** 🎉 The script will automatically:
+- ✅ Create Docker networks
+- ✅ Configure Let's Encrypt
+- ✅ Build all services
+- ✅ Start everything
+- ✅ Display deployment summary with longpolling status
+
+---
+
+### 📖 Manual Deployment (Alternative)
+
+If you prefer step-by-step control:
+
+#### 0. Install Docker (Optional)
 
 If you don't have Docker installed, run the installation script with sudo:
 
@@ -76,14 +119,14 @@ newgrp docker
 
 Then you can use Docker without sudo.
 
-### 1. Configure Docker Networks
+#### 1. Configure Docker Networks
 
 ```bash
 docker network create traefik-network
 docker network create postgres-network
 ```
 
-### 2. Configure Let's Encrypt Permissions
+#### 2. Configure Let's Encrypt Permissions
 
 ```bash
 mkdir -p traefik/letsencrypt
@@ -91,49 +134,13 @@ touch traefik/letsencrypt/acme.json
 chmod 600 traefik/letsencrypt/acme.json
 ```
 
-### 3. Configure Domains
+#### 3. Configure Domains
 
-Edit the `.env` files in each folder:
+Edit the `.env` files in each folder (see examples above).
 
-#### `traefik/.env`
-```env
-LETS_ENCRYPT_CONTACT_EMAIL=your-email@example.com
-DOMAIN_NAME=`traefik.yourdomain.com`
-```
+**Note**: You can also use the interactive deployment script for Odoo: `cd odoo && ./deploy.sh`
 
-#### `postgresql/.env`
-```env
-POSTGRES_DB=postgres
-POSTGRES_PASSWORD=odoo
-POSTGRES_USER=odoo
-```
-
-#### `odoo/.env`
-
-**Option 1: Official Docker Image (Recommended for Production)**
-```env
-DEPLOYMENT_MODE=image
-ODOO_VERSION=19.0
-HOST=postgresql
-USER=odoo
-PASSWORD=odoo
-DOMAIN=demo.yourdomain.com
-```
-
-**Option 2: Git Clone from Source (For Development/Specific Branches)**
-```env
-DEPLOYMENT_MODE=source
-ODOO_REPO=https://github.com/odoo/odoo.git
-ODOO_BRANCH=saas-18.4
-HOST=postgresql
-USER=odoo
-PASSWORD=odoo
-DOMAIN=demo.yourdomain.com
-```
-
-**Note**: You can also use the interactive deployment script: `cd odoo && ./deploy.sh`
-
-### 4. Build and Start Services
+#### 4. Build and Start Services
 
 ```bash
 # Build all services
@@ -145,6 +152,7 @@ DOMAIN=demo.yourdomain.com
 # Check status
 docker ps
 ```
+
 
 ## 🌐 Service Access
 
