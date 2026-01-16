@@ -1,411 +1,302 @@
-# Docker Traefik + Odoo (Multi-Version & Branch Support) + PostgreSQL
+# Docker Traefik + Odoo + PostgreSQL
 
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 [![Traefik](https://img.shields.io/badge/Traefik-v2.10-24A1C1?logo=traefikproxy&logoColor=white)](https://traefik.io/)
 [![Odoo](https://img.shields.io/badge/Odoo-19.0-714B67?logo=odoo&logoColor=white)](https://www.odoo.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Complete production-ready stack with Traefik as reverse proxy, automatic SSL certificates with Let's Encrypt, PostgreSQL 17, and Odoo with flexible deployment options.
+Production-.ready Odoo deployment with Traefik reverse proxy, automatic SSL certificates, and PostgreSQL 17.
 
-> **🚀 New to this project? Start here:** [**GET_STARTED.md**](GET_STARTED.md) - Deploy in 3 steps!
+## ✨ Features
 
-## ✨ Key Features
+- 🚀 **One-Command Deployment** - `./deploy.sh` and you're done
+- 🔒 **Automatic HTTPS** - Let's Encrypt SSL certificates with auto-renewal
+- 🌐 **WebSocket Support** - Real-time chat and notifications (longpolling enabled)
+- 📦 **Dual Deployment Modes** - Official Docker images or Git source
+- 🛡️ **Production Ready** - Isolated networks, security best practices
+- ⚙️ **Easy Configuration** - Just edit 3 `.env` files
 
-### 🎯 Dual Deployment Modes
-- **📦 Image Mode**: Official Docker images (19.0, 18.0, 17.0, etc.) - Fast & stable
-- **🔧 Source Mode**: Git clone from any branch (saas-18.4, saas-17.4, master) - Flexible & customizable
-
-### 🚀 Easy Management
-- **Interactive Setup**: Simple `./deploy.sh` script for configuration
-- **One-Command Deployment**: Build and start with single commands
-- **Automatic SSL**: Let's Encrypt certificates with auto-renewal
-- **Multi-Domain Support**: Configure multiple domains easily
-
-### 🛡️ Production Ready
-- **Traefik Reverse Proxy**: Automatic HTTPS, load balancing, WebSocket support
-- **PostgreSQL 17**: Latest database with persistent storage
-- **Security**: SSL/TLS encryption, isolated networks, configurable passwords
-- **Monitoring**: Easy log access and container management
-
-## 📚 Documentation
-
-- **[Summary](SUMMARY.md)** - Project overview and what's new 🎯
-- **[Quick Start Guide](QUICK_START.md)** - Get started in 5 minutes ⚡
-- **[Deployment Decision](DEPLOYMENT_DECISION.md)** - Choose the right deployment mode 🤔
-- **[Deployment Guide](odoo/DEPLOYMENT_GUIDE.md)** - Detailed deployment instructions 📖
-- **[Architecture Overview](ARCHITECTURE.md)** - System architecture and diagrams 🏗️
-- **[Configuration Examples](odoo/.env.example)** - Sample configurations 📝
-- **[YouTube Tutorial](YOUTUBE_TUTORIAL.md)** - Video tutorial reference 🎥
-- **[Changelog](CHANGELOG.md)** - Version history and updates 📋
-
-## 📋 Project Structure
-
-```
-docker-traefik/
-├── traefik/                    # Reverse proxy with automatic SSL
-├── postgresql/                 # PostgreSQL 17 database
-├── odoo/                       # Odoo with multi-version & branch support
-│   ├── deploy.sh              # Interactive deployment script
-│   ├── Dockerfile.image       # For official Docker images
-│   ├── Dockerfile.source      # For git clone deployment
-│   ├── .env.example           # Configuration template
-│   └── DEPLOYMENT_GUIDE.md    # Detailed guide
-├── build-all.sh               # Script to build all services
-├── start-all.sh               # Script to start all services
-├── stop-all.sh                # Script to stop all services
-├── QUICK_START.md             # Quick start guide
-└── README.md                  # This file
-```
-
+---
 
 ## 🚀 Quick Start
 
-### ⚡ One-Command Deployment
+### Step 1: Configure `.env` Files
 
-**Step 1:** Configure your `.env` files:
+Create and edit three configuration files:
 
-```bash
-# traefik/.env
-LETS_ENCRYPT_CONTACT_EMAIL=your-email@example.com
+**`traefik/.env`**
+```env
+LETS_ENCRYPT_CONTACT_EMAIL=admin@yourdomain.com
 DOMAIN_NAME=`traefik.yourdomain.com`
+```
 
-# postgresql/.env
+**`postgresql/.env`**
+```env
 POSTGRES_DB=postgres
-POSTGRES_PASSWORD=odoo
+POSTGRES_PASSWORD=strongpassword
 POSTGRES_USER=odoo
+```
 
-# odoo/.env (choose Image or Source mode)
+**`odoo/.env`**
+```env
 DEPLOYMENT_MODE=image
 ODOO_VERSION=19.0
 HOST=postgresql
 USER=odoo
-PASSWORD=odoo
+PASSWORD=strongpassword
 DOMAIN=`odoo.yourdomain.com`
 ```
 
-**Step 2:** Run the deployment script:
+### Step 2: Deploy
 
 ```bash
 chmod +x deploy.sh && ./deploy.sh
 ```
 
-**That's it!** 🎉 The script will automatically:
+That's it! 🎉 The script will:
 - ✅ Create Docker networks
 - ✅ Configure Let's Encrypt
 - ✅ Build all services
-- ✅ Start everything
-- ✅ Display deployment summary with longpolling status
+- ✅ Start everything with longpolling enabled
+
+### Step 3: Access Your Instance
+
+- **Odoo**: `https://odoo.yourdomain.com`
+- **Traefik Dashboard**: `https://traefik.yourdomain.com:8080`
+
+**Default Credentials:**
+- Master password: `odooPassword` (change in `odoo/odoo.conf`)
 
 ---
 
-### 📖 Manual Deployment (Alternative)
+## 📋 Project Structure
 
-If you prefer step-by-step control:
-
-#### 0. Install Docker (Optional)
-
-If you don't have Docker installed, run the installation script with sudo:
-
-```bash
-sudo ./install-docker.sh
+```
+docker-traefik/
+├── deploy.sh              # One-command deployment script
+├── build-all.sh           # Build all services
+├── start-all.sh           # Start all services
+├── stop-all.sh            # Stop all services
+├── traefik/
+│   ├── .env               # Traefik configuration
+│   └── docker-compose.yml
+├── postgresql/
+│   ├── .env               # Database configuration
+│   └── docker-compose.yml
+└── odoo/
+    ├── .env               # Odoo configuration
+    ├── docker-compose.yml
+    ├── odoo.conf          # Odoo settings (workers, longpolling, etc.)
+    ├── extra-addons/      # Custom modules
+    └── custom-addons/     # Additional modules
 ```
 
-After installation, **log out and log back in** for the changes to take effect, or run:
+---
 
-```bash
-newgrp docker
-```
+## 🎯 Deployment Modes
 
-Then you can use Docker without sudo.
+### Image Mode (Recommended for Production)
 
-#### 1. Configure Docker Networks
-
-```bash
-docker network create traefik-network
-docker network create postgres-network
-```
-
-#### 2. Configure Let's Encrypt Permissions
-
-```bash
-mkdir -p traefik/letsencrypt
-touch traefik/letsencrypt/acme.json
-chmod 600 traefik/letsencrypt/acme.json
-```
-
-#### 3. Configure Domains
-
-Edit the `.env` files in each folder (see examples above).
-
-**Note**: You can also use the interactive deployment script for Odoo: `cd odoo && ./deploy.sh`
-
-#### 4. Build and Start Services
-
-```bash
-# Build all services
-./build-all.sh
-
-# Start all services
-./start-all.sh
-
-# Check status
-docker ps
-```
-
-
-## 🌐 Service Access
-
-- **Traefik Dashboard**: `https://traefik.yourdomain.com:8080`
-- **Odoo**: `https://demo.yourdomain.com`
-  - Default user: `admin`
-  - Master password (odoo.conf): `odooPassword`
-
-## ⚙️ Domain Configuration
-
-The project uses **environment variables** to manage domains, avoiding manual entry in multiple places.
-
-### Change Odoo Domain
-
-Simply edit the `odoo/.env` file:
+Uses official Odoo Docker images - fast, stable, and production-ready.
 
 ```env
-DOMAIN=new-domain.yourdomain.com
-```
-
-All Traefik routers (HTTP, HTTPS, websockets, etc.) will automatically use this domain.
-
-### Change Traefik Domain
-
-Edit the `traefik/.env` file:
-
-```env
-DOMAIN_NAME=`new-traefik.yourdomain.com`
-```
-
-### Change Odoo Version or Branch
-
-#### Method 1: Interactive Script (Easiest)
-
-```bash
-cd odoo
-./deploy.sh
-```
-
-This will guide you through:
-- Choosing deployment mode (image or source)
-- Selecting version or branch
-- Building and starting the container
-
-#### Method 2: Manual Configuration
-
-**For Official Docker Image:**
-```bash
-# Edit odoo/.env
 DEPLOYMENT_MODE=image
-ODOO_VERSION=18.0  # or 17.0, 16.0, 15.0, etc.
-
-# Rebuild
-cd odoo
-docker compose up -d --build
+ODOO_VERSION=19.0  # or 18.0, 17.0, 16.0, etc.
 ```
 
-**For Specific Branch (e.g., saas-18.4):**
-```bash
-# Edit odoo/.env
+**Pros:**
+- ⚡ Fast build (2-5 minutes)
+- ✅ Stable and tested
+- 💾 Smaller size (~2 GB)
+- 🔄 Easy updates (`docker pull`)
+
+### Source Mode (For Development)
+
+Clones Odoo from Git - full source access for customization.
+
+```env
 DEPLOYMENT_MODE=source
 ODOO_REPO=https://github.com/odoo/odoo.git
-ODOO_BRANCH=saas-18.4  # or saas-17.4, master, etc.
-
-# Rebuild
-cd odoo
-docker compose up -d --build
+ODOO_BRANCH=saas-18.4  # or master, 19.0, etc.
 ```
 
-**Supported Options:**
-- **Image Mode**: Any official Odoo Docker image (19.0, 18.0, 17.0, 16.0, 15.0, 14.0, etc.)
-- **Source Mode**: Any branch from Odoo repository (saas-18.4, saas-17.4, master, etc.)
+**Pros:**
+- 🔧 Full source code access
+- 🎯 Use specific branches (saas-18.4, master, etc.)
+- 🛠️ Easy customization
+- 🚀 Development-friendly
 
-## 🛠️ Management Scripts
+**Cons:**
+- 🐌 Slower build (10-20 minutes)
+- 💾 Larger size (~5-8 GB)
 
-### `build-all.sh`
-Builds all service images:
-```bash
-./build-all.sh
+---
+
+## 🏗️ Architecture
+
+```
+                    Internet
+                       ↓
+             ┌──────────────────┐
+             │   Traefik v2.10  │ ← Port 80/443
+             │   (Reverse Proxy)│
+             │   • Auto HTTPS   │
+             │   • SSL Certs    │
+             └──────────────────┘
+                       ↓
+            traefik-network (Docker)
+                       ↓
+             ┌──────────────────┐
+             │   Odoo Container │
+             │   Port 8069/8072 │ ← Longpolling enabled
+             └──────────────────┘
+                       ↓
+           postgres-network (Docker)
+                       ↓
+             ┌──────────────────┐
+             │  PostgreSQL 17   │
+             │   (Internal only)│
+             └──────────────────┘
 ```
 
-### `start-all.sh`
-Starts all services in detached mode:
-```bash
-./start-all.sh
+**Networks:**
+- `traefik-network`: Public-facing (Traefik ↔ Odoo)
+- `postgres-network`: Internal only (Odoo ↔ PostgreSQL)
+
+**Security:**
+- PostgreSQL is NOT exposed to internet
+- Automatic SSL/TLS encryption
+- Network isolation
+
+---
+
+## ⚙️ Configuration
+
+### Odoo Configuration (`odoo/odoo.conf`)
+
+Key settings for production:
+
+```ini
+# Longpolling (WebSocket support)
+workers = 2                  # Must be >= 2 for longpolling
+gevent_port = 8072          # WebSocket port
+
+# Database
+db_host = postgresql
+db_port = 5432
+db_user = odoo
+db_password = odoo
+db_maxconn = 64
+
+# Performance
+limit_memory_soft = 4294967296
+limit_memory_hard = 5368709120
+workers = 2  # Adjust based on CPU cores
 ```
 
-### `stop-all.sh`
-Stops all services:
-```bash
-./stop-all.sh
+**Worker Calculation:**
+```
+workers = (CPU_cores * 2) + 1
 ```
 
-## 📦 Included Services
+For production:
+- 2 CPU cores → 5 workers
+- 4 CPU cores → 9 workers
+- 8 CPU cores → 17 workers
 
-### Traefik (Reverse Proxy)
-- **Version**: v2.10
-- **Ports**: 80 (HTTP), 443 (HTTPS), 8080 (Dashboard)
-- **Features**:
-  - Automatic SSL certificates with Let's Encrypt
-  - HTTP → HTTPS redirection
-  - GZIP compression
-  - Custom size limits (600MB)
+---
 
-### PostgreSQL
-- **Version**: 17
-- **Network**: `postgres-network` (internal)
-- **Persistent volume**: `postgresql-data`
+## 🔧 Management
 
-### Odoo (Multi-Version & Branch Support)
-- **Default version**: 19.0 (configurable via `.env`)
-- **Deployment modes**:
-  - **Image**: Official Docker images (19.0, 18.0, 17.0, etc.)
-  - **Source**: Git clone from repository (saas-18.4, saas-17.4, master, etc.)
-- **Internal ports**: 8069 (HTTP), 8072 (WebSocket)
-- **Features**:
-  - **Flexible deployment**: Choose between official images or specific branches
-  - **Interactive setup**: Use `./deploy.sh` for easy configuration
-  - Proxy mode enabled
-  - WebSocket for real-time chat
-  - Special routes for `/web/database` and `/website/info`
-  - Volumes:
-    - `odoo-data`: Odoo data
-    - `./extra-addons`: Custom modules
-    - `./custom-addons`: Additional custom modules
-    - `./odoo.conf`: Configuration
+### View Logs
 
-## 🚀 Deployment Examples
-
-### Example 1: Production with Official Odoo 19.0
 ```bash
-cd odoo
-# Edit .env
-DEPLOYMENT_MODE=image
-ODOO_VERSION=19.0
-DOMAIN=erp.mycompany.com
-
-# Build and start
-docker compose up -d --build
-```
-
-### Example 2: Development with SaaS 18.4 Branch
-```bash
-cd odoo
-# Edit .env
-DEPLOYMENT_MODE=source
-ODOO_BRANCH=saas-18.4
-DOMAIN=dev.mycompany.com
-
-# Build and start
-docker compose up -d --build
-```
-
-### Example 3: Testing Specific Branch from Custom Repository
-```bash
-cd odoo
-# Edit .env
-DEPLOYMENT_MODE=source
-ODOO_REPO=https://github.com/mycompany/odoo-fork.git
-ODOO_BRANCH=feature-custom-module
-DOMAIN=test.mycompany.com
-
-# Build and start
-docker compose up -d --build
-```
-
-### Example 4: Using Interactive Deployment Script
-```bash
-cd odoo
-./deploy.sh
-# Follow the interactive prompts to configure and deploy
-```
-
-## 🔧 Useful Commands
-
-### View service logs
-```bash
+cd odoo && docker compose logs -f
 cd traefik && docker compose logs -f
 cd postgresql && docker compose logs -f
-cd odoo && docker compose logs -f
 ```
 
-### Restart a specific service
+### Restart Services
+
+```bash
+./stop-all.sh && ./start-all.sh
+```
+
+### Update Odoo Version
+
+```bash
+# Edit odoo/.env
+ODOO_VERSION=18.0
+
+# Rebuild
+cd odoo && docker compose up -d --build
+```
+
+### Add Custom Modules
+
+```bash
+# Place your modules in:
+odoo/extra-addons/your_module/
+
+# Restart Odoo
+cd odoo && docker compose restart
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Longpolling Not Working
+
+Check if workers >= 2:
+```bash
+grep "^workers" odoo/odoo.conf
+# Should show: workers = 2 or higher
+```
+
+If workers = 1, edit `odoo/odoo.conf`:
+```ini
+workers = 2
+```
+
+Then restart:
 ```bash
 cd odoo && docker compose restart
 ```
 
-### Rebuild a service
-```bash
-cd odoo && docker compose up -d --build
-```
+Verify in browser DevTools (F12 → Network → WS):
+- Should see: `wss://your-domain.com/websocket`
+- Status: `101 Switching Protocols`
 
-### Check network status
-```bash
-docker network ls
-docker network inspect traefik-network
-docker network inspect postgres-network
-```
+### SSL Certificate Not Generated
 
-## 🔒 Security
+1. Check DNS points to your server IP
+2. Ensure ports 80 and 443 are open
+3. View Traefik logs:
+   ```bash
+   cd traefik && docker compose logs -f
+   ```
 
-- SSL certificates renew automatically
-- PostgreSQL is not publicly exposed (internal network only)
-- Configurable passwords in `.env` files
-- Traefik Dashboard protected (consider adding basic auth in production)
+### Cannot Connect to Database
 
-## 📝 Important Notes
-
-1. **DNS**: Make sure your domains point to the server IP before starting
-2. **Firewall**: Open ports 80 and 443 on your server
-3. **Let's Encrypt**: Has rate limiting (50 certificates per domain per week)
-4. **Production**: Change default passwords in `.env` files
-
-## 🐛 Troubleshooting
-
-### Error: "network not found"
-```bash
-docker network create traefik-network
-docker network create postgres-network
-```
-
-### Error: "acme.json permission denied"
-```bash
-chmod 600 traefik/letsencrypt/acme.json
-```
-
-### Odoo doesn't connect to PostgreSQL
-Verify both services are on the `postgres-network`:
+Check both services are on same network:
 ```bash
 docker network inspect postgres-network
 ```
 
-### SSL certificate not generated
-- Verify the domain points correctly to your server
-- Check Traefik logs: `cd traefik && docker compose logs -f`
-- Make sure ports 80 and 443 are open
+Verify credentials in `.env` files match.
 
-### Build fails with source deployment
-- Check if the branch name is correct
-- Verify repository URL is accessible
-- Check available disk space (source build requires more space)
-- View build logs: `cd odoo && docker compose build --no-cache`
+### Container Won't Start
 
-### Switching between deployment modes
-When switching from `image` to `source` or vice versa:
+View detailed logs:
 ```bash
-cd odoo
-# Stop and remove current container
-docker compose down
-# Remove old image
-docker compose build --no-cache
-# Start with new configuration
-docker compose up -d
+cd odoo && docker compose logs --tail=50
+```
+
+Check if ports are already in use:
+```bash
+docker ps
+netstat -tulpn | grep -E '(8069|8072|5432)'
 ```
 
 ---
@@ -416,57 +307,94 @@ docker compose up -d
 |---------|-----------|-------------|
 | **Build Time** | ⚡ 2-5 minutes | 🐌 10-20 minutes |
 | **Disk Space** | 💾 ~2 GB | 💾 ~5-8 GB |
-| **Flexibility** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **Stability** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐ |
+| **Customization** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
 | **Best For** | Production | Development |
-| **Versions** | 19.0, 18.0, 17.0... | Any branch |
 | **Updates** | `docker pull` | `git pull` + rebuild |
-| **Customization** | Limited | Full access |
 
 ---
 
-## 🌟 Community & Support
+## 🔒 Security Best Practices
 
-- **GitHub Repository**: [Mimbex/docker-traefik](https://github.com/Mimbex/docker-traefik)
-- **Odoo Apps by Dustin**: [Browse Modules](https://apps.odoo.com/apps/modules/browse?author=Dustin)
-- **Issues & Bug Reports**: [GitHub Issues](https://github.com/Mimbex/docker-traefik/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/Mimbex/docker-traefik/discussions)
+1. **Change Default Passwords**
+   - Edit `odoo/odoo.conf` → change `admin_passwd`
+   - Edit `postgresql/.env` → change `POSTGRES_PASSWORD`
+
+2. **Firewall Configuration**
+   ```bash
+   ufw allow 80/tcp
+   ufw allow 443/tcp
+   ufw enable
+   ```
+
+3. **Regular Updates**
+   ```bash
+   docker compose pull
+   docker compose up -d
+   ```
+
+4. **Backup Database**
+   ```bash
+   docker exec postgresql-postgresql-1 pg_dump -U odoo odoo > backup.sql
+   ```
 
 ---
 
-## 🎯 Quick Links
+## 🚀 Advanced Usage
 
-- 📖 [Full Documentation](SUMMARY.md)
-- ⚡ [Quick Start](QUICK_START.md)
-- 🏗️ [Architecture](ARCHITECTURE.md)
-- 🎥 [YouTube Tutorial](YOUTUBE_TUTORIAL.md)
-- 📋 [Changelog](CHANGELOG.md)
+### Multi-Domain Setup
+
+Edit `odoo/.env`:
+```env
+DOMAIN=`odoo1.com`, `odoo2.com`, `odoo3.com`
+```
+
+### Custom Repository (Source Mode)
+
+```env
+DEPLOYMENT_MODE=source
+ODOO_REPO=https://github.com/yourcompany/odoo-fork.git
+ODOO_BRANCH=feature-custom-module
+```
+
+### Resource Limits
+
+Add to `docker-compose.yml`:
+```yaml
+services:
+  odoo:
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+```
 
 ---
 
-## 🙏 Acknowledgments
+## 📚 Additional Resources
 
-- **Odoo Community** - For the amazing ERP system
-- **Traefik Team** - For the excellent reverse proxy
-- **Docker Community** - For containerization technology
-- **Contributors** - Everyone who helps improve this project
+- [Odoo Documentation](https://www.odoo.com/documentation/)
+- [Traefik Documentation](https://doc.traefik.io/traefik/)
+- [Docker Documentation](https://docs.docker.com/)
+- [Let's Encrypt](https://letsencrypt.org/)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- ⭐ Star the repository
+- 🐛 Report bugs
+- 💡 Suggest features
+- 📖 Improve documentation
+- 🔀 Submit pull requests
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-## 💖 Support the Project
-
-If this project helps you, please consider:
-- ⭐ Starring the repository
-- 🐛 Reporting bugs
-- 💡 Suggesting features
-- 📖 Improving documentation
-- 🔀 Contributing code
+MIT License - see LICENSE file for details.
 
 ---
 
