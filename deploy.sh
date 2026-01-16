@@ -18,6 +18,31 @@ echo -e "${BLUE}║${NC}    ${GREEN}Odoo + Traefik + PostgreSQL Deployment${NC} 
 echo -e "${BLUE}╚════════════════════════════════════════════════════════╝${NC}"
 echo ""
 
+# Step 0: Check and install Docker
+echo -e "${BLUE}🐳 Step 0: Checking Docker installation...${NC}"
+if ! command -v docker &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Docker not found. Installing...${NC}"
+    if [ -f "install-docker.sh" ]; then
+        chmod +x install-docker.sh
+        ./install-docker.sh
+        echo -e "${GREEN}✓${NC} Docker installed successfully"
+        echo -e "${YELLOW}⚠️  Please log out and log back in, or run: newgrp docker${NC}"
+        echo -e "${YELLOW}⚠️  Then run this script again.${NC}"
+        exit 0
+    else
+        echo -e "${RED}✗${NC} install-docker.sh not found!"
+        echo -e "${YELLOW}Please install Docker manually:${NC}"
+        echo "  Ubuntu/Debian: sudo apt install docker.io docker-compose-plugin"
+        echo "  CentOS/RHEL: sudo yum install docker docker-compose-plugin"
+        echo "  Or visit: https://docs.docker.com/engine/install/"
+        exit 1
+    fi
+else
+    DOCKER_VERSION=$(docker --version)
+    echo -e "${GREEN}✓${NC} Docker is installed: $DOCKER_VERSION"
+fi
+echo ""
+
 # Step 1: Check .env files
 echo -e "${BLUE}📋 Step 1: Checking .env files...${NC}"
 missing_env=0
