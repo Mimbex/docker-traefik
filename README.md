@@ -244,7 +244,35 @@ cd odoo && docker compose restart
 
 ---
 
-## 🐛 Troubleshooting
+## � Backup & Restore (New!)
+
+### Create Backup
+Automatically backs up PostgreSQL database + Odoo Filestore.
+
+```bash
+./backup.sh
+```
+- Saved in `./backups/YYYY-MM-DD_HH-MM-SS.tar.gz`
+- Automatically deletes backups older than 7 days
+
+### Restore Backup
+Interactively restore from an existing backup.
+
+```bash
+./restore.sh
+```
+**Warning**: This overwrites the current database and filestore!
+
+### Automatic Scheduled Backups (Cron)
+Add this to your crontab (`crontab -e`) to backup daily at 3 AM:
+
+```bash
+0 3 * * * cd /path/to/docker-traefik && ./backup.sh >> ./backup.log 2>&1
+```
+
+---
+
+## �🐛 Troubleshooting
 
 ### Longpolling Not Working
 
@@ -335,7 +363,7 @@ netstat -tulpn | grep -E '(8069|8072|5432)'
 
 4. **Backup Database**
    ```bash
-   docker exec postgresql-postgresql-1 pg_dump -U odoo odoo > backup.sql
+   ./backup.sh
    ```
 
 ---
